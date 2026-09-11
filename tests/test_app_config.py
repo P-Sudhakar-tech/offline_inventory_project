@@ -43,3 +43,37 @@ def test_reconfiguring_overwrites_the_previous_location(tmp_path):
     app_config.set_database_dir(second)
 
     assert app_config.get_database_dir() == second
+
+
+def test_backup_dir_defaults_to_none():
+    assert app_config.get_backup_dir() is None
+
+
+def test_set_backup_dir_persists_and_creates_folder(tmp_path):
+    target = tmp_path / "Backups" / "Inventory"
+    app_config.set_backup_dir(target)
+
+    assert app_config.get_backup_dir() == target
+    assert target.exists()
+
+
+def test_backup_retention_defaults_to_fourteen():
+    assert app_config.get_backup_retention() == 14
+
+
+def test_set_backup_retention_persists():
+    app_config.set_backup_retention(30)
+    assert app_config.get_backup_retention() == 30
+
+
+def test_database_and_backup_settings_do_not_clobber_each_other(tmp_path):
+    db_dir = tmp_path / "db"
+    backup_dir = tmp_path / "backup"
+
+    app_config.set_database_dir(db_dir)
+    app_config.set_backup_dir(backup_dir)
+    app_config.set_backup_retention(5)
+
+    assert app_config.get_database_dir() == db_dir
+    assert app_config.get_backup_dir() == backup_dir
+    assert app_config.get_backup_retention() == 5

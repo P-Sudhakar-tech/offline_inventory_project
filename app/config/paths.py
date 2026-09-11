@@ -31,6 +31,10 @@ def database_path() -> Path:
 
 
 def backup_dir() -> Path:
-    path = data_dir() / "backups"
+    """The folder backups are written to: the admin-configured one if set
+    (which may be a USB drive or LAN folder), else a "backups" subfolder
+    next to the database."""
+    configured = app_config.get_backup_dir()
+    path = configured or (data_dir() / "backups")
     path.mkdir(parents=True, exist_ok=True)
     return path

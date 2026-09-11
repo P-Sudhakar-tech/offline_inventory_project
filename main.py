@@ -4,11 +4,13 @@ from pathlib import Path
 from PySide6.QtWidgets import QApplication, QDialog, QMessageBox
 
 from app.config import app_config
-from app.config.paths import database_path
+from app.config.paths import backup_dir, database_path
 from app.data.migrate import MigrationError, run_migrations
 from app.data.session import new_session
 from app.security.session_context import set_current_user
+from app.services.audit import log_action
 from app.services.auth import has_any_user
+from app.services.backup import BackupError, create_backup, has_backup_today, prune_backups
 from app.ui.dialogs.database_location_dialog import DatabaseLocationDialog
 from app.ui.dialogs.first_run_setup_dialog import FirstRunSetupDialog
 from app.ui.dialogs.login_dialog import LoginDialog
@@ -64,6 +66,23 @@ def sign_in():
     return login_dialog.authenticated_user
 
 
+def run_auto_backup_if_needed() -> None:
+    """Takes one backup per calendar day, on whichever session happens to be
+    the first to sign in that day. Best-effort: a failure here must never
+    block the user from getting into the app.
+    """
+    try:
+        if has_backup_today(backup_dir()):
+            return
+        create_backup(database_path(), backup_dir())
+        prune_backups(backup_dir(), keep=app_config.get_backup_retention())
+        with new_session() as session:
+            log_action(session, "auto_backup", "Daily automatic backup")
+            session.commit()
+    except BackupError:
+        pass
+
+
 def main():
     app = QApplication(sys.argv)
     app.setStyleSheet(load_stylesheet())
@@ -80,6 +99,7 @@ def main():
             sys.exit(0)
 
         set_current_user(user)
+        run_auto_backup_if_needed()
         window = MainWindow(user)
         window.show()
         app.exec()

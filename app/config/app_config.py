@@ -55,3 +55,26 @@ def set_database_dir(directory: Path) -> None:
 def get_configured_database_path() -> Path | None:
     directory = get_database_dir()
     return (directory / DB_FILE_NAME) if directory else None
+
+
+def get_backup_dir() -> Path | None:
+    value = load_config().get("backup_dir")
+    return Path(value) if value else None
+
+
+def set_backup_dir(directory: Path) -> None:
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    config = load_config()
+    config["backup_dir"] = str(directory)
+    save_config(config)
+
+
+def get_backup_retention() -> int:
+    return load_config().get("backup_retention", 14)
+
+
+def set_backup_retention(count: int) -> None:
+    config = load_config()
+    config["backup_retention"] = int(count)
+    save_config(config)
