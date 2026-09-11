@@ -4,6 +4,7 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from app.data.models import Purchase, PurchaseItem, Sale, SaleItem, StockAdjustment
+from app.services.audit import log_action
 from app.services.stock_ledger import record_movement
 
 
@@ -111,5 +112,6 @@ def create_adjustment(
         reason="adjustment",
         reference=reason,
     )
+    log_action(session, "stock_adjustment", f"product_id={product_id} delta={quantity_delta} reason={reason}")
 
     return adjustment

@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.data.models import Category, Customer, Location, Product, Supplier, Unit
+from app.services.audit import log_action
 from app.services.stock_ledger import record_movement
 
 
@@ -48,6 +49,7 @@ def rename_reference(session: Session, model, row_id: int, new_name: str):
 def delete_reference(session: Session, model, row_id: int):
     row = session.get(model, row_id)
     if row is not None:
+        log_action(session, "reference_deleted", f"{model.__name__} id={row_id} name={row.name}")
         session.delete(row)
         session.flush()
 
@@ -74,6 +76,7 @@ def save_supplier(session: Session, supplier_id: int | None, name: str, contact:
 def delete_supplier(session: Session, supplier_id: int):
     row = session.get(Supplier, supplier_id)
     if row is not None:
+        log_action(session, "supplier_deleted", f"id={supplier_id} name={row.name}")
         session.delete(row)
         session.flush()
 
@@ -97,6 +100,7 @@ def save_customer(session: Session, customer_id: int | None, name: str, contact:
 def delete_customer(session: Session, customer_id: int):
     row = session.get(Customer, customer_id)
     if row is not None:
+        log_action(session, "customer_deleted", f"id={customer_id} name={row.name}")
         session.delete(row)
         session.flush()
 
@@ -188,5 +192,6 @@ def set_product_active(session: Session, product_id: int, is_active: bool):
     """Products are never hard-deleted once they may have transactions; toggle status instead."""
     product = session.get(Product, product_id)
     product.is_active = is_active
+    log_action(session, "product_status_changed", f"sku={product.sku} is_active={is_active}")
     session.flush()
     return product

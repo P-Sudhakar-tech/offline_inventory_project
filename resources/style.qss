@@ -106,6 +106,34 @@ QLabel#SectionTitle {
     font-weight: 600;
 }
 
+QLabel#Muted {
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* ---------- Header user info / logout ---------- */
+
+QLabel#UserBadge {
+    background-color: #eef2ff;
+    color: #4338ca;
+    border-radius: 16px;
+    padding: 6px 14px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+QPushButton#GhostButton {
+    background-color: transparent;
+    color: #64748b;
+    border: 1px solid transparent;
+}
+
+QPushButton#GhostButton:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    border-color: #e2e8f0;
+}
+
 /* ---------- Buttons ---------- */
 
 QPushButton {
@@ -182,7 +210,12 @@ QHeaderView::section {
 }
 
 QTableWidget::item {
-    padding: 4px;
+    padding: 6px 4px;
+}
+
+QTableWidget::item:selected {
+    background-color: #eef2ff;
+    color: #1e293b;
 }
 
 /* ---------- Misc ---------- */
