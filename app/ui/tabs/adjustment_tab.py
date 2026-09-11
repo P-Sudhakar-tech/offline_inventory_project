@@ -23,7 +23,7 @@ class AdjustmentTab(QWidget):
         self.setObjectName("Card")
 
         self.product_combo = QComboBox()
-        self._refresh_products()
+        self.refresh_products()
 
         self.delta_edit = QLineEdit()
         self.delta_edit.setPlaceholderText("e.g. -2 for a shortage, 5 for a found item")
@@ -47,11 +47,16 @@ class AdjustmentTab(QWidget):
         layout.addWidget(save_btn)
         layout.addStretch()
 
-    def _refresh_products(self):
+    def refresh_products(self):
+        current = self.product_combo.currentData()
+        self.product_combo.blockSignals(True)
         self.product_combo.clear()
         with new_session() as session:
             for product in list_products(session):
                 self.product_combo.addItem(f"{product.sku} — {product.name}", product.id)
+        index = self.product_combo.findData(current)
+        self.product_combo.setCurrentIndex(index if index >= 0 else 0)
+        self.product_combo.blockSignals(False)
 
     def _save(self):
         product_id = self.product_combo.currentData()

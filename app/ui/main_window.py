@@ -11,13 +11,17 @@ from PySide6.QtWidgets import (
 from app.data.models import Category, Location, Unit
 from app.ui.tabs.adjustment_tab import AdjustmentTab
 from app.ui.tabs.customer_tab import CustomerTab
+from app.ui.tabs.dashboard_tab import DashboardTab
 from app.ui.tabs.product_tab import ProductTab
 from app.ui.tabs.purchase_tab import PurchaseTab
 from app.ui.tabs.reference_tab import ReferenceTab
+from app.ui.tabs.reports_tab import ReportsTab
 from app.ui.tabs.sale_tab import SaleTab
+from app.ui.tabs.stock_ledger_tab import StockLedgerTab
 from app.ui.tabs.supplier_tab import SupplierTab
 
 NAV_ITEMS = [
+    "Dashboard",
     "Products",
     "Categories",
     "Units",
@@ -27,6 +31,8 @@ NAV_ITEMS = [
     "Purchase / Stock In",
     "Stock Out / Sale",
     "Stock Adjustment",
+    "Stock Ledger",
+    "Reports",
 ]
 
 
@@ -36,9 +42,9 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Offline Inventory Management System")
         self.resize(1200, 760)
 
-        self.product_tab = ProductTab()
         self.pages = [
-            self.product_tab,
+            DashboardTab(),
+            ProductTab(),
             ReferenceTab(Category, "Category"),
             ReferenceTab(Unit, "Unit"),
             ReferenceTab(Location, "Location"),
@@ -47,6 +53,8 @@ class MainWindow(QMainWindow):
             PurchaseTab(),
             SaleTab(),
             AdjustmentTab(),
+            StockLedgerTab(),
+            ReportsTab(),
         ]
 
         central = QWidget()
@@ -116,5 +124,9 @@ class MainWindow(QMainWindow):
             return
         self.stack.setCurrentIndex(index)
         self.page_title.setText(NAV_ITEMS[index])
-        if self.stack.widget(index) is self.product_tab:
-            self.product_tab.refresh()
+
+        page = self.stack.widget(index)
+        if hasattr(page, "refresh_products"):
+            page.refresh_products()
+        elif hasattr(page, "refresh"):
+            page.refresh()

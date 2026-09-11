@@ -70,6 +70,42 @@ QWidget#Card {
     border-radius: 10px;
 }
 
+QWidget#KpiCard {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+QLabel#KpiTitle {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+QLabel#KpiValue {
+    color: #0f172a;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+QLabel#KpiValueWarning {
+    color: #b45309;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+QLabel#KpiValueDanger {
+    color: #dc2626;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+QLabel#SectionTitle {
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 600;
+}
+
 /* ---------- Buttons ---------- */
 
 QPushButton {

@@ -102,6 +102,20 @@ class TransactionTabBase(QWidget):
         self.reference_edit.clear()
         self.party_combo.setCurrentIndex(0)
 
+    def refresh_products(self):
+        """Reload the party list; called whenever this screen regains focus
+        so suppliers/customers added elsewhere show up without a restart."""
+        current = self.party_combo.currentData()
+        self.party_combo.blockSignals(True)
+        self.party_combo.clear()
+        self.party_combo.addItem("(none)", None)
+        with new_session() as session:
+            for row in self._list_parties_fn(session):
+                self.party_combo.addItem(row.name, row.id)
+        index = self.party_combo.findData(current)
+        self.party_combo.setCurrentIndex(index if index >= 0 else 0)
+        self.party_combo.blockSignals(False)
+
     def _save(self):
         if not self._items:
             QMessageBox.information(self, "No items", "Add at least one line item first.")
