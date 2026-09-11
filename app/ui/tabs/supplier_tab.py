@@ -18,13 +18,17 @@ class SupplierTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self.setObjectName("Card")
+
         self.table = QTableWidget(0, 3)
         self.table.setHorizontalHeaderLabels(["Name", "Contact", "Address"])
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.table.setAlternatingRowColors(True)
 
         add_btn = QPushButton("Add")
+        add_btn.setObjectName("PrimaryButton")
         edit_btn = QPushButton("Edit")
         delete_btn = QPushButton("Delete")
         add_btn.clicked.connect(self._add)
@@ -38,6 +42,8 @@ class SupplierTab(QWidget):
         btn_row.addStretch()
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(14)
         layout.addLayout(btn_row)
         layout.addWidget(self.table)
 

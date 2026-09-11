@@ -28,13 +28,17 @@ class ReferenceTab(QWidget):
         self.model = model
         self.title = title
 
+        self.setObjectName("Card")
+
         self.table = QTableWidget(0, 1)
         self.table.setHorizontalHeaderLabels(["Name"])
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.table.setAlternatingRowColors(True)
 
         add_btn = QPushButton("Add")
+        add_btn.setObjectName("PrimaryButton")
         rename_btn = QPushButton("Rename")
         delete_btn = QPushButton("Delete")
         add_btn.clicked.connect(self._add)
@@ -48,6 +52,8 @@ class ReferenceTab(QWidget):
         btn_row.addStretch()
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(14)
         layout.addLayout(btn_row)
         layout.addWidget(self.table)
 

@@ -26,6 +26,8 @@ class ProductTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self.setObjectName("Card")
+
         self.show_inactive = QCheckBox("Show inactive products")
         self.show_inactive.stateChanged.connect(self.refresh)
 
@@ -34,8 +36,10 @@ class ProductTab(QWidget):
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.table.setAlternatingRowColors(True)
 
         add_btn = QPushButton("Add")
+        add_btn.setObjectName("PrimaryButton")
         edit_btn = QPushButton("Edit")
         self.toggle_btn = QPushButton("Deactivate")
         add_btn.clicked.connect(self._add)
@@ -50,6 +54,8 @@ class ProductTab(QWidget):
         btn_row.addWidget(self.show_inactive)
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(14)
         layout.addLayout(btn_row)
         layout.addWidget(self.table)
 

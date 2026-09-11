@@ -33,6 +33,8 @@ class TransactionTabBase(QWidget):
         self._list_parties_fn = list_parties_fn
         self._items = []  # list[(product, qty, price)]
 
+        self.setObjectName("Card")
+
         self.party_combo = QComboBox()
         self.reference_edit = QLineEdit()
         with new_session() as session:
@@ -47,6 +49,7 @@ class TransactionTabBase(QWidget):
         add_line_btn = QPushButton("Add Line Item")
         remove_line_btn = QPushButton("Remove Selected Line")
         save_btn = QPushButton("Save")
+        save_btn.setObjectName("PrimaryButton")
         add_line_btn.clicked.connect(self._add_line)
         remove_line_btn.clicked.connect(self._remove_line)
         save_btn.clicked.connect(self._save)
@@ -62,8 +65,11 @@ class TransactionTabBase(QWidget):
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.table.setAlternatingRowColors(True)
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(14)
         layout.addLayout(form)
         layout.addLayout(btn_row)
         layout.addWidget(self.table)

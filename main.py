@@ -1,12 +1,19 @@
 import sys
+from pathlib import Path
 
 from PySide6.QtWidgets import QApplication
 
 from app.ui.main_window import MainWindow
 
 
+def load_stylesheet() -> str:
+    style_path = Path(__file__).parent / "resources" / "style.qss"
+    return style_path.read_text(encoding="utf-8")
+
+
 def main():
     app = QApplication(sys.argv)
+    app.setStyleSheet(load_stylesheet())
     window = MainWindow()
     window.show()
     sys.exit(app.exec())

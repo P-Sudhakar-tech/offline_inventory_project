@@ -20,6 +20,8 @@ class AdjustmentTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self.setObjectName("Card")
+
         self.product_combo = QComboBox()
         self._refresh_products()
 
@@ -30,6 +32,7 @@ class AdjustmentTab(QWidget):
         self.reason_edit.setPlaceholderText("Reason (required)")
 
         save_btn = QPushButton("Apply Adjustment")
+        save_btn.setObjectName("PrimaryButton")
         save_btn.clicked.connect(self._save)
 
         form = QFormLayout()
@@ -38,6 +41,8 @@ class AdjustmentTab(QWidget):
         form.addRow("Reason", self.reason_edit)
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(14)
         layout.addLayout(form)
         layout.addWidget(save_btn)
         layout.addStretch()
