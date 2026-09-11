@@ -1,9 +1,11 @@
 import sys
 from pathlib import Path
 
-from PySide6.QtWidgets import QApplication, QDialog
+from PySide6.QtWidgets import QApplication, QDialog, QMessageBox
 
 from app.config import app_config
+from app.config.paths import database_path
+from app.data.migrate import MigrationError, run_migrations
 from app.data.session import new_session
 from app.security.session_context import set_current_user
 from app.services.auth import has_any_user
@@ -30,6 +32,20 @@ def ensure_database_configured() -> bool:
     return dialog.exec() == QDialog.Accepted
 
 
+def prepare_database() -> bool:
+    """Brings the configured database up to the current schema version,
+    creating it from scratch if it does not exist yet. Runs once at
+    startup, before any part of the app opens a session. Returns False if
+    migration failed, in which case the app should not proceed.
+    """
+    try:
+        run_migrations(database_path())
+        return True
+    except MigrationError as exc:
+        QMessageBox.critical(None, "Database error", str(exc))
+        return False
+
+
 def sign_in():
     """Runs first-run admin setup if needed, then the login dialog.
     Returns the authenticated User, or None if the user cancelled out.
@@ -54,6 +70,9 @@ def main():
 
     if not ensure_database_configured():
         sys.exit(0)
+
+    if not prepare_database():
+        sys.exit(1)
 
     while True:
         user = sign_in()
