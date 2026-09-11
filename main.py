@@ -3,9 +3,11 @@ from pathlib import Path
 
 from PySide6.QtWidgets import QApplication, QDialog
 
+from app.config import app_config
 from app.data.session import new_session
 from app.security.session_context import set_current_user
 from app.services.auth import has_any_user
+from app.ui.dialogs.database_location_dialog import DatabaseLocationDialog
 from app.ui.dialogs.first_run_setup_dialog import FirstRunSetupDialog
 from app.ui.dialogs.login_dialog import LoginDialog
 from app.ui.main_window import MainWindow
@@ -14,6 +16,18 @@ from app.ui.main_window import MainWindow
 def load_stylesheet() -> str:
     style_path = Path(__file__).parent / "resources" / "style.qss"
     return style_path.read_text(encoding="utf-8")
+
+
+def ensure_database_configured() -> bool:
+    """Asks where to store the database the very first time the app runs on
+    a machine. Must happen before any DB access (new_session()), since that
+    is what pins the database file location for the rest of the process.
+    Returns False if the user cancelled out.
+    """
+    if app_config.is_configured():
+        return True
+    dialog = DatabaseLocationDialog()
+    return dialog.exec() == QDialog.Accepted
 
 
 def sign_in():
@@ -37,6 +51,9 @@ def sign_in():
 def main():
     app = QApplication(sys.argv)
     app.setStyleSheet(load_stylesheet())
+
+    if not ensure_database_configured():
+        sys.exit(0)
 
     while True:
         user = sign_in()

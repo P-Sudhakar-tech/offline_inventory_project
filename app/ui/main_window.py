@@ -20,6 +20,7 @@ from app.ui.tabs.purchase_tab import PurchaseTab
 from app.ui.tabs.reference_tab import ReferenceTab
 from app.ui.tabs.reports_tab import ReportsTab
 from app.ui.tabs.sale_tab import SaleTab
+from app.ui.tabs.settings_tab import SettingsTab
 from app.ui.tabs.stock_ledger_tab import StockLedgerTab
 from app.ui.tabs.supplier_tab import SupplierTab
 from app.ui.tabs.user_management_tab import UserManagementTab
@@ -42,6 +43,7 @@ NAV_CATALOG = [
     ("📈  Reports", ReportsTab, ALL_ROLES),
     ("👤  Users", UserManagementTab, {"admin"}),
     ("🕵️  Audit Log", AuditLogTab, {"admin"}),
+    ("⚙️  Application Settings", SettingsTab, {"admin"}),
 ]
 
 
