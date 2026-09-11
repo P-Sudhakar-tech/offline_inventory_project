@@ -19,6 +19,18 @@ class EmptyTransactionError(Exception):
     pass
 
 
+class InvalidLineItemError(Exception):
+    pass
+
+
+def _validate_line_items(items: list[LineItem]) -> None:
+    for item in items:
+        if item.quantity <= 0:
+            raise InvalidLineItemError(f"Line item quantity must be greater than zero (got {item.quantity})")
+        if item.unit_price < 0:
+            raise InvalidLineItemError(f"Line item price cannot be negative (got {item.unit_price})")
+
+
 def create_purchase(
     session: Session,
     supplier_id: int | None,
@@ -27,6 +39,7 @@ def create_purchase(
 ) -> Purchase:
     if not items:
         raise EmptyTransactionError("A purchase needs at least one line item")
+    _validate_line_items(items)
 
     purchase = Purchase(supplier_id=supplier_id, reference=reference)
     session.add(purchase)
@@ -61,6 +74,7 @@ def create_sale(
 ) -> Sale:
     if not items:
         raise EmptyTransactionError("A sale needs at least one line item")
+    _validate_line_items(items)
 
     sale = Sale(customer_id=customer_id, reference=reference)
     session.add(sale)
@@ -96,6 +110,8 @@ def create_adjustment(
     reason = reason.strip()
     if not reason:
         raise ValueError("Stock adjustment requires a reason")
+    if quantity_delta == 0:
+        raise InvalidLineItemError("Adjustment quantity change cannot be zero")
 
     adjustment = StockAdjustment(
         product_id=product_id,

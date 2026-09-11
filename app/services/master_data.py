@@ -16,6 +16,15 @@ class DuplicateSkuError(Exception):
     pass
 
 
+class InvalidProductDataError(Exception):
+    pass
+
+
+def _validate_product_fields(purchase_price: Decimal, sale_price: Decimal, reorder_level: Decimal) -> None:
+    if purchase_price < 0 or sale_price < 0 or reorder_level < 0:
+        raise InvalidProductDataError("Prices and reorder level cannot be negative")
+
+
 # --- generic name-only reference data (Category, Unit, Location) ---------
 
 def list_reference(session: Session, model):
@@ -128,6 +137,9 @@ def create_product(
     barcode: str | None = None,
 ) -> Product:
     sku = sku.strip()
+    _validate_product_fields(purchase_price, sale_price, reorder_level)
+    if opening_stock < 0:
+        raise InvalidProductDataError("Opening stock cannot be negative")
     existing = session.scalar(select(Product).where(Product.sku == sku))
     if existing is not None:
         raise DuplicateSkuError(f"SKU '{sku}' already exists")
@@ -168,6 +180,7 @@ def update_product(
     barcode: str | None = None,
 ) -> Product:
     sku = sku.strip()
+    _validate_product_fields(purchase_price, sale_price, reorder_level)
     existing = session.scalar(
         select(Product).where(Product.sku == sku, Product.id != product_id)
     )

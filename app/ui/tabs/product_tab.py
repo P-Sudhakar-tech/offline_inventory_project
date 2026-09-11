@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 from app.data.session import new_session
 from app.services.master_data import (
     DuplicateSkuError,
+    InvalidProductDataError,
     create_product,
     list_products,
     set_product_active,
@@ -92,6 +93,8 @@ class ProductTab(QWidget):
                     session.commit()
                 except DuplicateSkuError as exc:
                     QMessageBox.warning(self, "Duplicate SKU", str(exc))
+                except InvalidProductDataError as exc:
+                    QMessageBox.warning(self, "Invalid data", str(exc))
             self.refresh()
 
     def _edit(self):
@@ -114,6 +117,8 @@ class ProductTab(QWidget):
                     session.commit()
                 except DuplicateSkuError as exc:
                     QMessageBox.warning(self, "Duplicate SKU", str(exc))
+                except InvalidProductDataError as exc:
+                    QMessageBox.warning(self, "Invalid data", str(exc))
         self.refresh()
 
     def _toggle_active(self):

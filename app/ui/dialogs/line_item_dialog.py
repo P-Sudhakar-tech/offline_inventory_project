@@ -63,6 +63,9 @@ class LineItemDialog(QDialog):
         if qty <= 0:
             QMessageBox.warning(self, "Invalid quantity", "Quantity must be greater than zero.")
             return
+        if price < 0:
+            QMessageBox.warning(self, "Invalid price", "Price cannot be negative.")
+            return
         self.accept()
 
     def values(self):

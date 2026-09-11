@@ -76,12 +76,18 @@ class ProductDialog(QDialog):
             QMessageBox.warning(self, "Missing data", "SKU and Name are required.")
             return
         try:
-            Decimal(self.purchase_price_edit.text() or "0")
-            Decimal(self.sale_price_edit.text() or "0")
-            Decimal(self.reorder_level_edit.text() or "0")
-            Decimal(self.opening_stock_edit.text() or "0")
+            purchase_price = Decimal(self.purchase_price_edit.text() or "0")
+            sale_price = Decimal(self.sale_price_edit.text() or "0")
+            reorder_level = Decimal(self.reorder_level_edit.text() or "0")
+            opening_stock = Decimal(self.opening_stock_edit.text() or "0")
         except InvalidOperation:
             QMessageBox.warning(self, "Invalid number", "Prices, reorder level and opening stock must be numeric.")
+            return
+        if purchase_price < 0 or sale_price < 0 or reorder_level < 0:
+            QMessageBox.warning(self, "Invalid number", "Prices and reorder level cannot be negative.")
+            return
+        if opening_stock < 0:
+            QMessageBox.warning(self, "Invalid number", "Opening stock cannot be negative.")
             return
         self.accept()
 

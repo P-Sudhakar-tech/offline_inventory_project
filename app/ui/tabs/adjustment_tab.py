@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
 from app.data.session import new_session
 from app.services.master_data import list_products
 from app.services.stock_ledger import InsufficientStockError
-from app.services.transactions import create_adjustment
+from app.services.transactions import InvalidLineItemError, create_adjustment
 
 
 class AdjustmentTab(QWidget):
@@ -81,6 +81,9 @@ class AdjustmentTab(QWidget):
                 session.commit()
         except InsufficientStockError as exc:
             QMessageBox.warning(self, "Insufficient stock", str(exc))
+            return
+        except InvalidLineItemError as exc:
+            QMessageBox.warning(self, "Invalid data", str(exc))
             return
 
         QMessageBox.information(self, "Saved", "Adjustment applied.")

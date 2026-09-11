@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 
 from app.data.session import new_session
 from app.services.stock_ledger import InsufficientStockError, ProductNotFoundError
+from app.services.transactions import EmptyTransactionError, InvalidLineItemError
 from app.ui.dialogs.line_item_dialog import LineItemDialog
 
 
@@ -131,6 +132,9 @@ class TransactionTabBase(QWidget):
             return
         except ProductNotFoundError as exc:
             QMessageBox.warning(self, "Product not found", str(exc))
+            return
+        except (EmptyTransactionError, InvalidLineItemError) as exc:
+            QMessageBox.warning(self, "Invalid data", str(exc))
             return
         QMessageBox.information(self, "Saved", "Transaction saved.")
         self._reset_form()
