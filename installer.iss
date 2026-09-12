@@ -24,6 +24,16 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
+; Defaults to a per-user install (no admin prompt, installs under
+; %LocalAppData%\Programs, Start Menu shortcut and uninstall entry are
+; per-user) but still offers a "for all users" choice, which installs to
+; Program Files and HKLM like a traditional admin install. Either way the
+; installer registers a normal Windows uninstall entry (visible in
+; Settings > Apps / Control Panel > Programs and Features) and a Start
+; Menu shortcut (indexed by Windows Search) - {#MyAppName} shows up in
+; both regardless of which mode is chosen.
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=installer_output
 OutputBaseFilename=InventoryManagerSetup
 Compression=lzma

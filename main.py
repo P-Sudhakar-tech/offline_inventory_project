@@ -11,6 +11,13 @@ from app.security.session_context import set_current_user
 from app.services.audit import log_action
 from app.services.auth import has_any_user
 from app.services.backup import BackupError, create_backup, has_backup_today, prune_backups
+from app.setup.self_install import (
+    UNINSTALL_FLAG,
+    is_frozen,
+    is_installed,
+    perform_self_install,
+    perform_uninstall,
+)
 from app.ui.dialogs.database_location_dialog import DatabaseLocationDialog
 from app.ui.dialogs.first_run_setup_dialog import FirstRunSetupDialog
 from app.ui.dialogs.login_dialog import LoginDialog
@@ -84,6 +91,21 @@ def run_auto_backup_if_needed() -> None:
 
 
 def main():
+    # Only meaningful for the packaged exe: in dev mode (python main.py)
+    # there is nothing to install. Handled before QApplication exists so
+    # neither path ever flashes a window before exiting/relaunching.
+    if is_frozen():
+        if UNINSTALL_FLAG in sys.argv:
+            perform_uninstall()
+            sys.exit(0)
+        if not is_installed():
+            perform_self_install()
+            # perform_self_install() exits the process itself once it has
+            # relaunched the installed copy, unless we were already
+            # running from the install folder (first-run registration
+            # with nothing to copy) - in which case it returns and normal
+            # startup continues below.
+
     app = QApplication(sys.argv)
     app.setStyleSheet(load_stylesheet())
 
