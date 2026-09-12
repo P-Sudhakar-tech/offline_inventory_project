@@ -114,4 +114,4 @@ installer.iss      # Inno Setup installer script (optional alternative)
 
 ## License
 
-Private project.
+MIT — see [LICENSE](LICENSE).
