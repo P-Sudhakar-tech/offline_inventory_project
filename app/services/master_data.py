@@ -20,9 +20,9 @@ class InvalidProductDataError(Exception):
     pass
 
 
-def _validate_product_fields(purchase_price: Decimal, sale_price: Decimal, reorder_level: Decimal) -> None:
-    if purchase_price < 0 or sale_price < 0 or reorder_level < 0:
-        raise InvalidProductDataError("Prices and reorder level cannot be negative")
+def _validate_product_fields(price: Decimal, reorder_level: Decimal) -> None:
+    if price < 0 or reorder_level < 0:
+        raise InvalidProductDataError("Price and reorder level cannot be negative")
 
 
 # --- generic name-only reference data (Category, Unit, Location) ---------
@@ -130,14 +130,13 @@ def create_product(
     category_id: int | None,
     unit_id: int | None,
     location_id: int | None,
-    purchase_price: Decimal,
-    sale_price: Decimal,
+    price: Decimal,
     reorder_level: Decimal,
     opening_stock: Decimal,
     barcode: str | None = None,
 ) -> Product:
     sku = sku.strip()
-    _validate_product_fields(purchase_price, sale_price, reorder_level)
+    _validate_product_fields(price, reorder_level)
     if opening_stock < 0:
         raise InvalidProductDataError("Opening stock cannot be negative")
     existing = session.scalar(select(Product).where(Product.sku == sku))
@@ -151,8 +150,7 @@ def create_product(
         category_id=category_id,
         unit_id=unit_id,
         location_id=location_id,
-        purchase_price=purchase_price,
-        sale_price=sale_price,
+        price=price,
         reorder_level=reorder_level,
         current_stock=Decimal("0"),
         is_active=True,
@@ -174,13 +172,12 @@ def update_product(
     category_id: int | None,
     unit_id: int | None,
     location_id: int | None,
-    purchase_price: Decimal,
-    sale_price: Decimal,
+    price: Decimal,
     reorder_level: Decimal,
     barcode: str | None = None,
 ) -> Product:
     sku = sku.strip()
-    _validate_product_fields(purchase_price, sale_price, reorder_level)
+    _validate_product_fields(price, reorder_level)
     existing = session.scalar(
         select(Product).where(Product.sku == sku, Product.id != product_id)
     )
@@ -194,8 +191,7 @@ def update_product(
     product.category_id = category_id
     product.unit_id = unit_id
     product.location_id = location_id
-    product.purchase_price = purchase_price
-    product.sale_price = sale_price
+    product.price = price
     product.reorder_level = reorder_level
     session.flush()
     return product

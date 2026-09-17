@@ -6,7 +6,7 @@ from app.ui.tabs.transaction_tab_base import TransactionTabBase
 
 class PurchaseTab(TransactionTabBase):
     party_label = "Supplier"
-    price_field = "purchase_price"
+    price_field = "price"
 
     def __init__(self, parent=None):
         super().__init__(Supplier, list_suppliers, parent)

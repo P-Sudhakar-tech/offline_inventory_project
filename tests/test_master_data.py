@@ -33,13 +33,13 @@ def test_create_reference_rejects_duplicate_name(session):
 def test_create_product_rejects_duplicate_sku(session):
     create_product(
         session, sku="SKU-1", name="Widget", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+        location_id=None, price=Decimal("2"),
         reorder_level=Decimal("0"), opening_stock=Decimal("0"),
     )
     with pytest.raises(DuplicateSkuError):
         create_product(
             session, sku="SKU-1", name="Other", category_id=None, unit_id=None,
-            location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+            location_id=None, price=Decimal("2"),
             reorder_level=Decimal("0"), opening_stock=Decimal("0"),
         )
 
@@ -47,7 +47,7 @@ def test_create_product_rejects_duplicate_sku(session):
 def test_create_product_with_opening_stock_creates_ledger_entry(session):
     product = create_product(
         session, sku="SKU-2", name="Gadget", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("5"), sale_price=Decimal("9"),
+        location_id=None, price=Decimal("9"),
         reorder_level=Decimal("2"), opening_stock=Decimal("40"),
     )
     session.commit()
@@ -58,7 +58,7 @@ def test_create_product_with_opening_stock_creates_ledger_entry(session):
 def test_deactivate_product_does_not_delete_it(session):
     product = create_product(
         session, sku="SKU-3", name="Thing", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("1"),
+        location_id=None, price=Decimal("1"),
         reorder_level=Decimal("0"), opening_stock=Decimal("0"),
     )
     set_product_active(session, product.id, False)
@@ -73,17 +73,17 @@ def test_deactivate_product_does_not_delete_it(session):
 def test_update_product_rejects_sku_collision_with_other_product(session):
     p1 = create_product(
         session, sku="SKU-A", name="A", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("1"),
+        location_id=None, price=Decimal("1"),
         reorder_level=Decimal("0"), opening_stock=Decimal("0"),
     )
     p2 = create_product(
         session, sku="SKU-B", name="B", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("1"),
+        location_id=None, price=Decimal("1"),
         reorder_level=Decimal("0"), opening_stock=Decimal("0"),
     )
     with pytest.raises(DuplicateSkuError):
         update_product(
             session, p2.id, sku="SKU-A", name="B", category_id=None, unit_id=None,
-            location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("1"),
+            location_id=None, price=Decimal("1"),
             reorder_level=Decimal("0"),
         )

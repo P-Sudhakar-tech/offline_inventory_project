@@ -23,7 +23,7 @@ from app.services.reports import (
     stock_movement_report,
 )
 
-STOCK_HEADERS = ["SKU", "Name", "Stock", "Reorder Level", "Sale Price", "Stock Value"]
+STOCK_HEADERS = ["SKU", "Name", "Stock", "Reorder Level", "Price", "Stock Value"]
 MOVEMENT_HEADERS = ["Date", "SKU", "Product", "Reason", "Qty Change", "Balance After", "Reference"]
 
 
@@ -34,8 +34,8 @@ def _stock_rows(products):
             p.name,
             str(p.current_stock),
             str(p.reorder_level),
-            str(p.sale_price),
-            f"{p.current_stock * p.sale_price:.2f}",
+            str(p.price),
+            f"{p.current_stock * p.price:.2f}",
         ]
         for p in products
     ]

@@ -19,8 +19,7 @@ class Product(Base):
     unit_id: Mapped[int | None] = mapped_column(ForeignKey("units.id"))
     location_id: Mapped[int | None] = mapped_column(ForeignKey("locations.id"))
 
-    purchase_price: Mapped[Decimal] = mapped_column(SqliteDecimal, default=Decimal("0"))
-    sale_price: Mapped[Decimal] = mapped_column(SqliteDecimal, default=Decimal("0"))
+    price: Mapped[Decimal] = mapped_column(SqliteDecimal, default=Decimal("0"))
 
     reorder_level: Mapped[Decimal] = mapped_column(SqliteDecimal, default=Decimal("0"))
     current_stock: Mapped[Decimal] = mapped_column(SqliteDecimal, default=Decimal("0"))

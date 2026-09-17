@@ -20,7 +20,7 @@ from app.services.master_data import (
 )
 from app.ui.dialogs.product_dialog import ProductDialog
 
-COLUMNS = ["SKU", "Name", "Purchase Price", "Sale Price", "Stock", "Reorder Level", "Active"]
+COLUMNS = ["SKU", "Name", "Price", "Stock", "Reorder Level", "Active"]
 
 
 class ProductTab(QWidget):
@@ -70,11 +70,10 @@ class ProductTab(QWidget):
             for i, row in enumerate(rows):
                 self.table.setItem(i, 0, QTableWidgetItem(row.sku))
                 self.table.setItem(i, 1, QTableWidgetItem(row.name))
-                self.table.setItem(i, 2, QTableWidgetItem(str(row.purchase_price)))
-                self.table.setItem(i, 3, QTableWidgetItem(str(row.sale_price)))
-                self.table.setItem(i, 4, QTableWidgetItem(str(row.current_stock)))
-                self.table.setItem(i, 5, QTableWidgetItem(str(row.reorder_level)))
-                self.table.setItem(i, 6, QTableWidgetItem("Yes" if row.is_active else "No"))
+                self.table.setItem(i, 2, QTableWidgetItem(str(row.price)))
+                self.table.setItem(i, 3, QTableWidgetItem(str(row.current_stock)))
+                self.table.setItem(i, 4, QTableWidgetItem(str(row.reorder_level)))
+                self.table.setItem(i, 5, QTableWidgetItem("Yes" if row.is_active else "No"))
                 self._ids.append((row.id, row.is_active))
 
     def _selected(self):

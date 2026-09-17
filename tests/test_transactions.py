@@ -26,7 +26,7 @@ def session():
 def _product(session, opening=Decimal("0")):
     return create_product(
         session, sku="SKU-1", name="Widget", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("10"), sale_price=Decimal("15"),
+        location_id=None, price=Decimal("15"),
         reorder_level=Decimal("5"), opening_stock=opening,
     )
 

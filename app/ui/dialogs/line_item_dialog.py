@@ -16,7 +16,7 @@ from app.services.master_data import list_products
 class LineItemDialog(QDialog):
     """Pick a product and enter quantity/unit price for one purchase/sale line."""
 
-    def __init__(self, default_price_field: str = "purchase_price", parent=None):
+    def __init__(self, default_price_field: str = "price", parent=None):
         super().__init__(parent)
         self.setWindowTitle("Add Line Item")
         self._default_price_field = default_price_field

@@ -48,7 +48,7 @@ def test_actions_are_attributed_to_the_logged_in_user(session):
 def test_stock_adjustment_is_audited(session):
     product = create_product(
         session, sku="SKU-1", name="Widget", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+        location_id=None, price=Decimal("2"),
         reorder_level=Decimal("0"), opening_stock=Decimal("10"),
     )
     session.commit()
@@ -64,7 +64,7 @@ def test_stock_adjustment_is_audited(session):
 def test_product_deactivation_is_audited(session):
     product = create_product(
         session, sku="SKU-2", name="Gadget", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+        location_id=None, price=Decimal("2"),
         reorder_level=Decimal("0"), opening_stock=Decimal("0"),
     )
     session.commit()

@@ -23,8 +23,7 @@ class ProductDialog(QDialog):
         self.sku_edit = QLineEdit(product.sku if product else "")
         self.barcode_edit = QLineEdit(product.barcode if product and product.barcode else "")
         self.name_edit = QLineEdit(product.name if product else "")
-        self.purchase_price_edit = QLineEdit(str(product.purchase_price) if product else "0")
-        self.sale_price_edit = QLineEdit(str(product.sale_price) if product else "0")
+        self.price_edit = QLineEdit(str(product.price) if product else "0")
         self.reorder_level_edit = QLineEdit(str(product.reorder_level) if product else "0")
         self.opening_stock_edit = QLineEdit("0")
 
@@ -53,8 +52,7 @@ class ProductDialog(QDialog):
         form.addRow("Category", self.category_combo)
         form.addRow("Unit", self.unit_combo)
         form.addRow("Location", self.location_combo)
-        form.addRow("Purchase price", self.purchase_price_edit)
-        form.addRow("Sale price", self.sale_price_edit)
+        form.addRow("Price", self.price_edit)
         form.addRow("Reorder level", self.reorder_level_edit)
         if not self.is_edit:
             form.addRow("Opening stock", self.opening_stock_edit)
@@ -76,15 +74,14 @@ class ProductDialog(QDialog):
             QMessageBox.warning(self, "Missing data", "SKU and Name are required.")
             return
         try:
-            purchase_price = Decimal(self.purchase_price_edit.text() or "0")
-            sale_price = Decimal(self.sale_price_edit.text() or "0")
+            price = Decimal(self.price_edit.text() or "0")
             reorder_level = Decimal(self.reorder_level_edit.text() or "0")
             opening_stock = Decimal(self.opening_stock_edit.text() or "0")
         except InvalidOperation:
-            QMessageBox.warning(self, "Invalid number", "Prices, reorder level and opening stock must be numeric.")
+            QMessageBox.warning(self, "Invalid number", "Price, reorder level and opening stock must be numeric.")
             return
-        if purchase_price < 0 or sale_price < 0 or reorder_level < 0:
-            QMessageBox.warning(self, "Invalid number", "Prices and reorder level cannot be negative.")
+        if price < 0 or reorder_level < 0:
+            QMessageBox.warning(self, "Invalid number", "Price and reorder level cannot be negative.")
             return
         if opening_stock < 0:
             QMessageBox.warning(self, "Invalid number", "Opening stock cannot be negative.")
@@ -99,8 +96,7 @@ class ProductDialog(QDialog):
             "category_id": self.category_combo.currentData(),
             "unit_id": self.unit_combo.currentData(),
             "location_id": self.location_combo.currentData(),
-            "purchase_price": Decimal(self.purchase_price_edit.text() or "0"),
-            "sale_price": Decimal(self.sale_price_edit.text() or "0"),
+            "price": Decimal(self.price_edit.text() or "0"),
             "reorder_level": Decimal(self.reorder_level_edit.text() or "0"),
             "opening_stock": Decimal(self.opening_stock_edit.text() or "0"),
         }

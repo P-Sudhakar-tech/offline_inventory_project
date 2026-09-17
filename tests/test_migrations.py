@@ -1,9 +1,8 @@
 import sqlite3
 
-import pytest
+from alembic import command
 
-from app.data.db import create_db_engine, init_db
-from app.data.migrate import run_migrations
+from app.data.migrate import _build_config, run_migrations
 
 
 def _tables(db_path) -> set[str]:
@@ -39,11 +38,21 @@ def test_run_migrations_adopts_a_pre_alembic_database(tmp_path):
     was introduced) has all the application tables from create_all but no
     alembic_version table. Migrations must adopt it in place rather than
     trying to re-create tables that already exist.
+
+    Such a database reflects the schema as of the first migration (not the
+    current models, which may have moved on since), so it's built by running
+    just that first migration and then dropping its version tracking.
     """
     db_path = tmp_path / "inventory.db"
-    engine = create_db_engine(db_path=str(db_path))
-    init_db(engine)
-    engine.dispose()
+    config = _build_config(db_path)
+    initial_revision = "fe4783f90f4f"
+    command.upgrade(config, initial_revision)
+    conn = sqlite3.connect(str(db_path))
+    try:
+        conn.execute("DROP TABLE alembic_version")
+        conn.commit()
+    finally:
+        conn.close()
 
     tables_before = _tables(db_path)
     assert "users" in tables_before

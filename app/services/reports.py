@@ -19,7 +19,7 @@ class DashboardSummary:
 def dashboard_summary(session: Session) -> DashboardSummary:
     products = session.scalars(select(Product).where(Product.is_active.is_(True))).all()
 
-    total_value = sum((p.current_stock * p.sale_price for p in products), Decimal("0"))
+    total_value = sum((p.current_stock * p.price for p in products), Decimal("0"))
     low_stock = sum(1 for p in products if 0 < p.current_stock <= p.reorder_level)
     out_of_stock = sum(1 for p in products if p.current_stock <= 0)
 

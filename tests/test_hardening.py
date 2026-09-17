@@ -31,11 +31,11 @@ def session():
 
 # --- boundary: invalid data --------------------------------------------
 
-def test_negative_purchase_price_rejected(session):
+def test_negative_price_rejected(session):
     with pytest.raises(InvalidProductDataError):
         create_product(
             session, sku="SKU-NEG", name="Bad", category_id=None, unit_id=None,
-            location_id=None, purchase_price=Decimal("-1"), sale_price=Decimal("2"),
+            location_id=None, price=Decimal("-1"),
             reorder_level=Decimal("0"), opening_stock=Decimal("0"),
         )
 
@@ -44,7 +44,7 @@ def test_negative_reorder_level_rejected(session):
     with pytest.raises(InvalidProductDataError):
         create_product(
             session, sku="SKU-NEG2", name="Bad", category_id=None, unit_id=None,
-            location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+            location_id=None, price=Decimal("2"),
             reorder_level=Decimal("-5"), opening_stock=Decimal("0"),
         )
 
@@ -53,7 +53,7 @@ def test_negative_opening_stock_rejected(session):
     with pytest.raises(InvalidProductDataError):
         create_product(
             session, sku="SKU-NEG3", name="Bad", category_id=None, unit_id=None,
-            location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+            location_id=None, price=Decimal("2"),
             reorder_level=Decimal("0"), opening_stock=Decimal("-10"),
         )
 
@@ -61,7 +61,7 @@ def test_negative_opening_stock_rejected(session):
 def test_zero_or_negative_line_item_quantity_rejected(session):
     product = create_product(
         session, sku="SKU-1", name="Widget", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+        location_id=None, price=Decimal("2"),
         reorder_level=Decimal("0"), opening_stock=Decimal("100"),
     )
     with pytest.raises(InvalidLineItemError):
@@ -75,7 +75,7 @@ def test_zero_or_negative_line_item_quantity_rejected(session):
 def test_negative_line_item_price_rejected(session):
     product = create_product(
         session, sku="SKU-2", name="Widget", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+        location_id=None, price=Decimal("2"),
         reorder_level=Decimal("0"), opening_stock=Decimal("10"),
     )
     with pytest.raises(InvalidLineItemError):
@@ -86,14 +86,14 @@ def test_negative_line_item_price_rejected(session):
 def test_duplicate_sku_and_barcode_both_rejected(session):
     create_product(
         session, sku="DUP-1", name="First", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+        location_id=None, price=Decimal("2"),
         reorder_level=Decimal("0"), opening_stock=Decimal("0"), barcode="BC-1",
     )
     from app.services.master_data import DuplicateSkuError
     with pytest.raises(DuplicateSkuError):
         create_product(
             session, sku="DUP-1", name="Second", category_id=None, unit_id=None,
-            location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+            location_id=None, price=Decimal("2"),
             reorder_level=Decimal("0"), opening_stock=Decimal("0"),
         )
     # Barcode uniqueness is enforced at the database level (unique constraint).
@@ -111,7 +111,7 @@ def test_duplicate_sku_and_barcode_both_rejected(session):
 def test_very_large_quantity_is_handled_exactly(session):
     product = create_product(
         session, sku="SKU-BIG", name="Bulk Item", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("0.01"), sale_price=Decimal("0.02"),
+        location_id=None, price=Decimal("0.02"),
         reorder_level=Decimal("0"), opening_stock=Decimal("0"),
     )
     huge_qty = Decimal("999999999.99")
@@ -124,7 +124,7 @@ def test_very_large_quantity_is_handled_exactly(session):
 def test_many_small_fractional_movements_sum_exactly(session):
     product = create_product(
         session, sku="SKU-FRAC", name="Fractional", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("1"),
+        location_id=None, price=Decimal("1"),
         reorder_level=Decimal("0"), opening_stock=Decimal("0"),
     )
     for _ in range(1000):
@@ -138,7 +138,7 @@ def test_many_small_fractional_movements_sum_exactly(session):
 def test_failed_purchase_leaves_no_partial_ledger_entries(session):
     good_product = create_product(
         session, sku="SKU-GOOD", name="Good", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+        location_id=None, price=Decimal("2"),
         reorder_level=Decimal("0"), opening_stock=Decimal("10"),
     )
     session.commit()
@@ -166,8 +166,8 @@ def test_failed_purchase_leaves_no_partial_ledger_entries(session):
 def test_rolled_back_session_does_not_persist_new_product(session):
     create_product(
         session, sku="SKU-ROLLBACK", name="Should not persist", category_id=None,
-        unit_id=None, location_id=None, purchase_price=Decimal("1"),
-        sale_price=Decimal("2"), reorder_level=Decimal("0"), opening_stock=Decimal("5"),
+        unit_id=None, location_id=None,
+        price=Decimal("2"), reorder_level=Decimal("0"), opening_stock=Decimal("5"),
     )
     session.rollback()
 
@@ -185,8 +185,8 @@ def test_bulk_data_performance_is_reasonable(session):
     for i in range(300):
         p = create_product(
             session, sku=f"PERF-{i:04d}", name=f"Product {i}", category_id=None,
-            unit_id=None, location_id=None, purchase_price=Decimal("10"),
-            sale_price=Decimal("15"), reorder_level=Decimal("5"),
+            unit_id=None, location_id=None,
+            price=Decimal("15"), reorder_level=Decimal("5"),
             opening_stock=Decimal("100"),
         )
         products.append(p)

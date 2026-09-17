@@ -26,17 +26,17 @@ def session():
 def test_dashboard_summary_counts_low_and_out_of_stock(session):
     healthy = create_product(
         session, sku="SKU-H", name="Healthy", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("5"), sale_price=Decimal("10"),
+        location_id=None, price=Decimal("10"),
         reorder_level=Decimal("5"), opening_stock=Decimal("100"),
     )
     low = create_product(
         session, sku="SKU-L", name="Low", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("5"), sale_price=Decimal("10"),
+        location_id=None, price=Decimal("10"),
         reorder_level=Decimal("10"), opening_stock=Decimal("3"),
     )
     out = create_product(
         session, sku="SKU-O", name="Out", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("5"), sale_price=Decimal("10"),
+        location_id=None, price=Decimal("10"),
         reorder_level=Decimal("5"), opening_stock=Decimal("0"),
     )
     session.commit()
@@ -56,7 +56,7 @@ def test_dashboard_summary_counts_low_and_out_of_stock(session):
 def test_product_ledger_reflects_all_movements_in_order(session):
     product = create_product(
         session, sku="SKU-1", name="Widget", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("5"), sale_price=Decimal("10"),
+        location_id=None, price=Decimal("10"),
         reorder_level=Decimal("5"), opening_stock=Decimal("20"),
     )
     create_sale(session, customer_id=None, reference="S1", items=[LineItem(product.id, Decimal("5"), Decimal("10"))])
@@ -70,7 +70,7 @@ def test_product_ledger_reflects_all_movements_in_order(session):
 def test_recent_transactions_returns_product_pairs(session):
     product = create_product(
         session, sku="SKU-1", name="Widget", category_id=None, unit_id=None,
-        location_id=None, purchase_price=Decimal("5"), sale_price=Decimal("10"),
+        location_id=None, price=Decimal("10"),
         reorder_level=Decimal("5"), opening_stock=Decimal("20"),
     )
     session.commit()

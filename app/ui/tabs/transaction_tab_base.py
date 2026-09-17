@@ -26,7 +26,7 @@ class TransactionTabBase(QWidget):
     """
 
     party_label = "Party"
-    price_field = "purchase_price"
+    price_field = "price"
 
     def __init__(self, party_model, list_parties_fn, parent=None):
         super().__init__(parent)

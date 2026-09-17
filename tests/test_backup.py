@@ -25,7 +25,7 @@ def _make_db_with_product(db_path):
     with factory() as session:
         create_product(
             session, sku="SKU-1", name="Widget", category_id=None, unit_id=None,
-            location_id=None, purchase_price=Decimal("1"), sale_price=Decimal("2"),
+            location_id=None, price=Decimal("2"),
             reorder_level=Decimal("0"), opening_stock=Decimal("10"),
         )
         session.commit()
