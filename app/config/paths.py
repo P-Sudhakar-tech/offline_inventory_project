@@ -38,3 +38,11 @@ def backup_dir() -> Path:
     path = configured or (data_dir() / "backups")
     path.mkdir(parents=True, exist_ok=True)
     return path
+
+
+def log_dir() -> Path:
+    """The folder application log files are written to: a "logs" subfolder
+    next to the database."""
+    path = data_dir() / "logs"
+    path.mkdir(parents=True, exist_ok=True)
+    return path

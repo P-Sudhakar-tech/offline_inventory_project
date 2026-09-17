@@ -1,9 +1,12 @@
+import logging
 import sqlite3
 from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+
+logger = logging.getLogger("app")
 
 MIGRATIONS_DIR = Path(__file__).parent / "migrations"
 
@@ -63,4 +66,5 @@ def run_migrations(db_path) -> None:
             command.stamp(config, initial_revision)
         command.upgrade(config, "head")
     except Exception as exc:  # alembic raises plain Exception/CommandError subtypes
+        logger.exception("Migration failed")
         raise MigrationError(f"Failed to prepare the database: {exc}") from exc

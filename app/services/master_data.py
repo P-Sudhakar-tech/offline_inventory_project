@@ -27,8 +27,11 @@ def _validate_product_fields(price: Decimal, reorder_level: Decimal) -> None:
 
 # --- generic name-only reference data (Category, Unit, Location) ---------
 
-def list_reference(session: Session, model):
-    return session.scalars(select(model).order_by(model.name)).all()
+def list_reference(session: Session, model, include_inactive: bool = False):
+    stmt = select(model).order_by(model.name)
+    if not include_inactive:
+        stmt = stmt.where(model.is_active.is_(True))
+    return session.scalars(stmt).all()
 
 
 def create_reference(session: Session, model, name: str):
@@ -55,18 +58,23 @@ def rename_reference(session: Session, model, row_id: int, new_name: str):
     return row
 
 
-def delete_reference(session: Session, model, row_id: int):
+def set_reference_active(session: Session, model, row_id: int, is_active: bool):
+    """Reference rows are never hard-deleted once they may be referenced by
+    products; toggle status instead."""
     row = session.get(model, row_id)
-    if row is not None:
-        log_action(session, "reference_deleted", f"{model.__name__} id={row_id} name={row.name}")
-        session.delete(row)
-        session.flush()
+    row.is_active = is_active
+    log_action(session, "reference_status_changed", f"{model.__name__} id={row_id} name={row.name} is_active={is_active}")
+    session.flush()
+    return row
 
 
 # --- suppliers / customers ------------------------------------------------
 
-def list_suppliers(session: Session):
-    return session.scalars(select(Supplier).order_by(Supplier.name)).all()
+def list_suppliers(session: Session, include_inactive: bool = False):
+    stmt = select(Supplier).order_by(Supplier.name)
+    if not include_inactive:
+        stmt = stmt.where(Supplier.is_active.is_(True))
+    return session.scalars(stmt).all()
 
 
 def save_supplier(session: Session, supplier_id: int | None, name: str, contact: str, address: str):
@@ -82,16 +90,19 @@ def save_supplier(session: Session, supplier_id: int | None, name: str, contact:
     return row
 
 
-def delete_supplier(session: Session, supplier_id: int):
+def set_supplier_active(session: Session, supplier_id: int, is_active: bool):
     row = session.get(Supplier, supplier_id)
-    if row is not None:
-        log_action(session, "supplier_deleted", f"id={supplier_id} name={row.name}")
-        session.delete(row)
-        session.flush()
+    row.is_active = is_active
+    log_action(session, "supplier_status_changed", f"id={supplier_id} name={row.name} is_active={is_active}")
+    session.flush()
+    return row
 
 
-def list_customers(session: Session):
-    return session.scalars(select(Customer).order_by(Customer.name)).all()
+def list_customers(session: Session, include_inactive: bool = False):
+    stmt = select(Customer).order_by(Customer.name)
+    if not include_inactive:
+        stmt = stmt.where(Customer.is_active.is_(True))
+    return session.scalars(stmt).all()
 
 
 def save_customer(session: Session, customer_id: int | None, name: str, contact: str):
@@ -106,12 +117,12 @@ def save_customer(session: Session, customer_id: int | None, name: str, contact:
     return row
 
 
-def delete_customer(session: Session, customer_id: int):
+def set_customer_active(session: Session, customer_id: int, is_active: bool):
     row = session.get(Customer, customer_id)
-    if row is not None:
-        log_action(session, "customer_deleted", f"id={customer_id} name={row.name}")
-        session.delete(row)
-        session.flush()
+    row.is_active = is_active
+    log_action(session, "customer_status_changed", f"id={customer_id} name={row.name} is_active={is_active}")
+    session.flush()
+    return row
 
 
 # --- products --------------------------------------------------------------

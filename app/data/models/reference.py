@@ -9,6 +9,7 @@ class Category(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    is_active: Mapped[bool] = mapped_column(default=True)
 
 
 class Unit(Base):
@@ -16,6 +17,7 @@ class Unit(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(60), unique=True, nullable=False)
+    is_active: Mapped[bool] = mapped_column(default=True)
 
 
 class Location(Base):
@@ -23,6 +25,7 @@ class Location(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    is_active: Mapped[bool] = mapped_column(default=True)
 
 
 class Supplier(Base):
@@ -32,6 +35,7 @@ class Supplier(Base):
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     contact: Mapped[str | None] = mapped_column(String(200))
     address: Mapped[str | None] = mapped_column(String(400))
+    is_active: Mapped[bool] = mapped_column(default=True)
 
 
 class Customer(Base):
@@ -40,3 +44,4 @@ class Customer(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     contact: Mapped[str | None] = mapped_column(String(200))
+    is_active: Mapped[bool] = mapped_column(default=True)

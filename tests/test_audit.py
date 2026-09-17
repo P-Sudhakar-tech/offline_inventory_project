@@ -6,7 +6,7 @@ from app.data.db import create_db_engine, init_db, make_session_factory
 from app.security.session_context import get_current_user, set_current_user
 from app.services.audit import recent_audit_log
 from app.services.auth import create_user
-from app.services.master_data import create_product, delete_reference, set_product_active
+from app.services.master_data import create_product, set_product_active, set_reference_active
 from app.services.transactions import create_adjustment
 from app.data.models import Category
 
@@ -36,12 +36,12 @@ def test_actions_are_attributed_to_the_logged_in_user(session):
     category = Category(name="Snacks")
     session.add(category)
     session.flush()
-    delete_reference(session, Category, category.id)
+    set_reference_active(session, Category, category.id, False)
     session.commit()
 
     entries = recent_audit_log(session)
     log, user = entries[0]
-    assert log.action == "reference_deleted"
+    assert log.action == "reference_status_changed"
     assert user.username == "admin"
 
 
@@ -81,7 +81,7 @@ def test_audit_entry_has_no_user_when_nobody_is_logged_in(session):
     category = Category(name="Beverages")
     session.add(category)
     session.flush()
-    delete_reference(session, Category, category.id)
+    set_reference_active(session, Category, category.id, False)
     session.commit()
 
     log, user = recent_audit_log(session)[0]

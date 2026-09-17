@@ -32,9 +32,12 @@ class ProductDialog(QDialog):
         self.location_combo = QComboBox()
 
         with new_session() as session:
-            self._fill_combo(self.category_combo, list_reference(session, Category))
-            self._fill_combo(self.unit_combo, list_reference(session, Unit))
-            self._fill_combo(self.location_combo, list_reference(session, Location))
+            category_id = product.category_id if product else None
+            unit_id = product.unit_id if product else None
+            location_id = product.location_id if product else None
+            self._fill_combo(self.category_combo, self._rows_for_combo(session, Category, category_id))
+            self._fill_combo(self.unit_combo, self._rows_for_combo(session, Unit, unit_id))
+            self._fill_combo(self.location_combo, self._rows_for_combo(session, Location, location_id))
 
         if product:
             self._select_combo(self.category_combo, product.category_id)
@@ -57,6 +60,18 @@ class ProductDialog(QDialog):
         if not self.is_edit:
             form.addRow("Opening stock", self.opening_stock_edit)
         form.addRow(buttons)
+
+    @staticmethod
+    def _rows_for_combo(session, model, current_id):
+        """Active rows, plus the currently-assigned row even if it has since
+        been deactivated, so editing an existing product never silently
+        drops its category/unit/location."""
+        rows = list(list_reference(session, model))
+        if current_id is not None and not any(row.id == current_id for row in rows):
+            current = session.get(model, current_id)
+            if current is not None:
+                rows.append(current)
+        return rows
 
     @staticmethod
     def _fill_combo(combo: QComboBox, rows):

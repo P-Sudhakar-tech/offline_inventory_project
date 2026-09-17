@@ -9,8 +9,16 @@ from app.services.master_data import (
     DuplicateSkuError,
     create_product,
     create_reference,
+    list_customers,
     list_products,
+    list_reference,
+    list_suppliers,
+    save_customer,
+    save_supplier,
+    set_customer_active,
     set_product_active,
+    set_reference_active,
+    set_supplier_active,
     update_product,
 )
 
@@ -68,6 +76,39 @@ def test_deactivate_product_does_not_delete_it(session):
     everything = list_products(session, include_inactive=True)
     assert product.id not in [p.id for p in active_only]
     assert product.id in [p.id for p in everything]
+
+
+def test_deactivate_reference_does_not_delete_it(session):
+    category = create_reference(session, Category, "Snacks")
+    set_reference_active(session, Category, category.id, False)
+    session.commit()
+
+    active_only = list_reference(session, Category)
+    everything = list_reference(session, Category, include_inactive=True)
+    assert category.id not in [c.id for c in active_only]
+    assert category.id in [c.id for c in everything]
+
+
+def test_deactivate_supplier_does_not_delete_it(session):
+    supplier = save_supplier(session, None, "Acme Supplies", "", "")
+    set_supplier_active(session, supplier.id, False)
+    session.commit()
+
+    active_only = list_suppliers(session)
+    everything = list_suppliers(session, include_inactive=True)
+    assert supplier.id not in [s.id for s in active_only]
+    assert supplier.id in [s.id for s in everything]
+
+
+def test_deactivate_customer_does_not_delete_it(session):
+    customer = save_customer(session, None, "Jane Doe", "")
+    set_customer_active(session, customer.id, False)
+    session.commit()
+
+    active_only = list_customers(session)
+    everything = list_customers(session, include_inactive=True)
+    assert customer.id not in [c.id for c in active_only]
+    assert customer.id in [c.id for c in everything]
 
 
 def test_update_product_rejects_sku_collision_with_other_product(session):

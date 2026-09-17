@@ -1,3 +1,4 @@
+import logging
 import sys
 from pathlib import Path
 
@@ -7,6 +8,7 @@ from app.config import app_config
 from app.config.paths import backup_dir, database_path
 from app.data.migrate import MigrationError, run_migrations
 from app.data.session import new_session
+from app.logging_setup import configure_logging, install_excepthook
 from app.security.session_context import set_current_user
 from app.services.audit import log_action
 from app.services.auth import has_any_user
@@ -86,8 +88,8 @@ def run_auto_backup_if_needed() -> None:
         with new_session() as session:
             log_action(session, "auto_backup", "Daily automatic backup")
             session.commit()
-    except BackupError:
-        pass
+    except BackupError as exc:
+        logging.getLogger("app").warning("Automatic backup failed: %s", exc)
 
 
 def main():
@@ -111,6 +113,9 @@ def main():
 
     if not ensure_database_configured():
         sys.exit(0)
+
+    configure_logging()
+    install_excepthook()
 
     if not prepare_database():
         sys.exit(1)
